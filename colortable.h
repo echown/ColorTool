@@ -28,6 +28,8 @@ public:
     Stats** colorStats();
     bool isEnabled() {return enabled;}
     int getUpdatedColor(int y, int u, int v);
+    void setColor(int y, int u, int v, unsigned col);
+    void unSetColor(int y, int u, int v, unsigned col);
 
 private:
     static const int mainColors = 5;

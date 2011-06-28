@@ -2,6 +2,7 @@
 #define COLORCREATOR_H
 
 #include <QWidget>
+#include <QMouseEvent>
 #include "roboimage.h"
 #include "coloredit.h"
 #include "colortable.h"
@@ -33,6 +34,11 @@
 #define RED_COL 0x20
 #define NAVY_COL 0x40
 
+#define IMAGE_X  50  // where the large image x is
+#define IMAGE_Y  60
+#define IMAGE_WIDTH  640
+#define IMAGE_HEIGHT  480
+
 
 
 namespace Ui {
@@ -51,7 +57,7 @@ public:
     ~ColorCreator();
     void updateDisplays();
     void updateColors();
-    void updateThresh();
+    void updateThresh(bool imageChanged, bool choiceChanged, bool colorsChanged);
     void initStats();
     void collectStats(int x, int y);
     void outputStats();
@@ -64,7 +70,12 @@ public:
     QColor getChannelView(int i, int j);
     void largeDisplay();
     QColor displayColorTable(int i, int j);
-    bool testValue(float h, float s, float z, int y, int v, int color);
+    bool testValue(float h, float s, float z, int y, int u, int v, int color);
+
+protected:
+    void mouseMoveEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
 private slots:
     void on_pushButton_clicked();
@@ -115,6 +126,14 @@ private slots:
 
     void on_vMax_valueChanged(int value);
 
+    void on_radioButton_clicked();
+
+    void on_ColorChange_clicked();
+
+    void on_cornerDefine_clicked();
+
+    void on_changeColor_clicked();
+
 private:
     Ui::ColorCreator *ui;
     RoboImage roboimage;
@@ -155,6 +174,11 @@ private:
     unsigned *bitColor;
     bool haveFile;
     bool viewerEnabled;
+    bool tableMode;
+    bool defineMode;
+    bool cornerStatus;
+    QPoint firstPoint;
+    QPoint lastPoint;
 };
 
 #endif // COLORCREATOR_H

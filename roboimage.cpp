@@ -1,5 +1,12 @@
+/* This class deals with RoboCup images.  It is far from complete.  For one,
+  it only deals with the actual image and not the joint values.
+  */
 #include "roboimage.h"
 
+/* Constructor.  Takes a width and height.
+  @param wd         width of our images
+  @param ht         height
+  */
 RoboImage::RoboImage(int wd, int ht)
 {
     width = wd;
@@ -14,6 +21,14 @@ RoboImage::RoboImage(int wd, int ht)
     }
 }
 
+/* Read an image.  Only mostly (see above).
+  Reading bytes in QT is kind of weird (or at least the way I figured out is weird).
+  We read in one byte chunks - this is done by reading into a byte array of size 1.
+  Then we need to make sure that QT interprets our numbers the way we want them,
+  meaning between 0 and 255.  This actually takes a fair amount of care.  See the
+  code for more.
+  @param filename      the image filename
+  */
 void RoboImage::read(QString filename)
 {
     QFile file(filename);
@@ -28,12 +43,16 @@ void RoboImage::read(QString filename)
         for (int x = 0; x < width; x += 2)
         {
             QByteArray temp;
+            // read a single byte
             temp = file.read(1);
+            // now put that where we want it
             yImg[x][y] = temp[0];
+            // sometimes it gets interpreted as a negative number, so make it positive
             while (yImg[x][y] < 0)
             {
                 yImg[x][y] = 256 + yImg[x][y];
             }
+            // sometimes it gets interpreted as a number larger than 255, so reduce it
             yImg[x][y] = yImg[x][y] % 256;
             temp = file.read(1);
             uImg[x][y] = temp[0];
@@ -62,12 +81,21 @@ void RoboImage::read(QString filename)
     }
     file.close();
 }
+
+/* Used for returning bitmapped images.  Never really got this to work properly.
+  To Do: fix
+  */
 QImage RoboImage::fast()
 {
     ColorZone cz();
     return bmp();
 }
 
+/* Get R information for the specified pixel
+  @param x          x value
+  @param y          y value
+  @return           amount of red in that pixel
+  */
 int RoboImage::getRed(int x, int y)
 {
     ColorSpace c;
@@ -75,6 +103,11 @@ int RoboImage::getRed(int x, int y)
     return c.getRb();
 }
 
+/* Get G information for the specified pixel
+  @param x          x value
+  @param y          y value
+  @return           amount of green in that pixel
+  */
 int RoboImage::getGreen(int x, int y)
 {
     ColorSpace c;
@@ -82,6 +115,11 @@ int RoboImage::getGreen(int x, int y)
     return c.getGb();
 }
 
+/* Get B information for the specified pixel
+  @param x          x value
+  @param y          y value
+  @return           amount of blue in that pixel
+  */
 int RoboImage::getBlue(int x, int y)
 {
     ColorSpace c;
@@ -89,6 +127,11 @@ int RoboImage::getBlue(int x, int y)
     return c.getBb();
 }
 
+/* Get H information for the specified pixel
+  @param x          x value
+  @param y          y value
+  @return           amount of Hue in that pixel
+  */
 int RoboImage::getH(int x, int y)
 {
     ColorSpace c;
@@ -96,6 +139,11 @@ int RoboImage::getH(int x, int y)
     return c.getHb();
 }
 
+/* Get S information for the specified pixel
+  @param x          x value
+  @param y          y value
+  @return           amount of saturation in that pixel
+  */
 int RoboImage::getS(int x, int y)
 {
     ColorSpace c;
@@ -103,6 +151,11 @@ int RoboImage::getS(int x, int y)
     return c.getSb();
 }
 
+/* Get Z(v) information for the specified pixel
+  @param x          x value
+  @param y          y value
+  @return           amount of z in that pixel
+  */
 int RoboImage::getZ(int x, int y)
 {
     ColorSpace c;
@@ -110,6 +163,9 @@ int RoboImage::getZ(int x, int y)
     return c.getZb();
 }
 
+/* Return a bitmapped image of the image.  Doesn't really work.
+  To Do: fix
+  */
 QImage RoboImage::bmp()
 {
     QImage img(width, height, QImage::Format_RGB32);
